@@ -11,7 +11,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
@@ -59,7 +59,6 @@ export default function ExperienceForm({ skills, experience }: Props) {
     register,
     control,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
@@ -88,8 +87,15 @@ export default function ExperienceForm({ skills, experience }: Props) {
     name: "bullets",
   });
 
-  const isContinued = watch("isContinued");
-  const selectedSkillIds = watch("skillIds");
+  const isContinued = useWatch({
+    control,
+    name: "isContinued",
+  });
+
+  const selectedSkillIds = useWatch({
+    control,
+    name: "skillIds",
+  });
 
   useEffect(() => {
     if (isContinued) {
@@ -154,7 +160,7 @@ export default function ExperienceForm({ skills, experience }: Props) {
       )}
 
       {/* Position Information */}
-      <section className="rounded-xl border border-slate-800 bg-slate-900/70 px-6 lg:px-4 py-5">
+      <section className="rounded-xl border border-slate-800 bg-slate-900/70 px-1 lg:px-4 py-5">
         <div className="border-b border-slate-800 px-5 py-4">
           <h2 className="text-sm font-semibold text-white">
             Position Information
@@ -165,7 +171,7 @@ export default function ExperienceForm({ skills, experience }: Props) {
           </p>
         </div>
 
-        <div className="grid gap-5 p-5 md:grid-cols-2">
+        <div className="grid gap-5 p-5 lg:p-6">
           {/* Job title */}
           <div>
             <label
@@ -307,13 +313,19 @@ export default function ExperienceForm({ skills, experience }: Props) {
 
             <input
               {...register("endDate", {
-                setValueAs: (value) => (value === "" ? null : Number(value)),
+                setValueAs: (value) => {
+                  if (value === "" || value == null) {
+                    return null;
+                  }
+
+                  return Number(value);
+                },
               })}
               id="endDate"
               type="number"
               min={1900}
               max={2100}
-              disabled={isContinued}
+              readOnly={isContinued}
               placeholder={isContinued ? "Present" : "2026"}
               className={`w-full rounded-lg border border-slate-700 px-3 py-2.5 text-sm text-slate-400 outline-none transition focus:border-slate-800 focus:ring-1 focus:ring-gray-900 placeholder:text-slate-600 ${
                 errors.endDate
@@ -332,7 +344,7 @@ export default function ExperienceForm({ skills, experience }: Props) {
       </section>
 
       {/* Summary */}
-      <section className="rounded-xl border border-slate-800 bg-slate-900/70 px-6 lg:px-4 py-5">
+      <section className="rounded-xl border border-slate-800 bg-slate-900/70 px-1 lg:px-4 py-5">
         <div className="border-b border-slate-800 px-5 py-4">
           <h2 className="text-sm font-semibold text-white">Job Summary</h2>
 
@@ -341,7 +353,7 @@ export default function ExperienceForm({ skills, experience }: Props) {
           </p>
         </div>
 
-        <div className="p-5">
+        <div className=" p-5 lg:p-6">
           <textarea
             {...register("jobSummary")}
             rows={5}
@@ -362,7 +374,7 @@ export default function ExperienceForm({ skills, experience }: Props) {
       </section>
 
       {/* Stack */}
-      <section className="rounded-xl border border-slate-800 bg-slate-900/70 px-6 lg:px-4 py-5">
+      <section className="rounded-xl border border-slate-800 bg-slate-900/70 px-1 lg:px-4 py-5">
         <div className="border-b border-slate-800 px-5 py-4">
           <h2 className="text-sm font-semibold text-white">Tech Stack</h2>
 
@@ -371,7 +383,7 @@ export default function ExperienceForm({ skills, experience }: Props) {
           </p>
         </div>
 
-        <div className="p-5">
+        <div className=" p-5 lg:p-6">
           <Controller
             name="skillIds"
             control={control}
@@ -395,7 +407,7 @@ export default function ExperienceForm({ skills, experience }: Props) {
       </section>
 
       {/* Responsibilities */}
-      <section className="rounded-xl border border-slate-800 bg-slate-900/70 px-6 lg:px-4 py-5">
+      <section className="rounded-xl border border-slate-800 bg-slate-900/70 px-1 lg:px-4 py-5">
         <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
           <div>
             <h2 className="text-sm font-semibold text-white">
@@ -421,7 +433,7 @@ export default function ExperienceForm({ skills, experience }: Props) {
           </button>
         </div>
 
-        <div className="space-y-3 p-5">
+        <div className="space-y-3 p-5 lg:p-6">
           {bulletFields.map((field, index) => (
             <div key={field.id} className="flex items-start gap-2">
               {/* Future drag handle */}

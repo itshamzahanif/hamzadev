@@ -45,7 +45,7 @@ const experiences = [
     startDate: 2024,
     endDate: null,
     isContinued: true,
-    stack: [96, 102, 104, 108, 109, 98],
+    stack: [19, 20, 21, 22, 23, 24],
     bullets: [
       "Delivered custom CMS and e-commerce solutions for international clients",
       "Built tailored admin dashboards and automated inventory workflows",
@@ -62,7 +62,7 @@ const experiences = [
     startDate: 2025,
     endDate: 2026,
     isContinued: false,
-    stack: [96, 102, 108, 110, 98],
+    stack: [23, 24, 25, 26, 27],
     bullets: [
       "Built and shipped commercial web apps across the MERN and Laravel stacks",
       "Designed REST APIs consumed by decoupled React frontends",
@@ -79,7 +79,7 @@ const experiences = [
     startDate: 2023,
     endDate: 2024,
     isContinued: false,
-    stack: [104, 114, 115, 100, 116],
+    stack: [28, 29, 30, 31, 32],
     bullets: [
       "Maintained and developed client-facing UI layouts for core company products using Laravel Blade",
       "Integrated frontend Blade templates seamlessly with backend controllers, routes, and data models",
