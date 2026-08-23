@@ -437,14 +437,14 @@ export default function ExperienceForm({ skills, experience }: Props) {
           {bulletFields.map((field, index) => (
             <div key={field.id} className="flex items-start gap-2">
               {/* Future drag handle */}
-              <button
+              {/* <button
                 type="button"
                 disabled
                 title="Drag to reorder"
                 className="mt-2.5 shrink-0 cursor-grab text-slate-700"
               >
                 <GripVertical className="h-4 w-4" />
-              </button>
+              </button> */}
 
               <div className="min-w-0 flex-1">
                 <input

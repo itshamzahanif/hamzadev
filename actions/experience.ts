@@ -268,3 +268,37 @@ export async function deleteExperience(id: number) {
     };
   }
 }
+
+interface SortExpProp {
+  id: number;
+  sortOrder: number;
+}
+
+export async function sortExperience(sortedData: SortExpProp[]) {
+  try {
+    await prisma.$transaction(
+      sortedData.map((data) =>
+        prisma.experience.update({
+          where: {
+            id: data.id,
+          },
+          data: {
+            sortOrder: data.sortOrder,
+          },
+        }),
+      ),
+    );
+
+    return {
+      success: true,
+      message: "Experience sorted successfully",
+    };
+  } catch (err) {
+    console.error("Error sorting experience", err);
+
+    return {
+      success: false,
+      error: "Error sorting experience",
+    };
+  }
+}
