@@ -1,4 +1,4 @@
-import { PageViewTracker } from "@/components/analytics/page-view-tracker";
+import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getSettings } from "@/actions/settings";
 import { Metadata } from "next";
