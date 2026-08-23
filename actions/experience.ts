@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { experienceSchema } from "@/schemas/schemas";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/authSession";
 import { z } from "zod";
 
 export type ExperienceFormData = z.infer<typeof experienceSchema>;
@@ -74,6 +75,11 @@ function validateExperienceData(data: ExperienceFormData) {
 }
 
 export async function createExperience(data: ExperienceFormData) {
+  const session = await getSession();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
   const validation = validateExperienceData(data);
 
   if (!validation.success) {
@@ -119,6 +125,7 @@ export async function createExperience(data: ExperienceFormData) {
       },
     });
 
+    revalidatePath("/");
     revalidatePath("/admin/experience");
 
     return {
@@ -135,6 +142,11 @@ export async function createExperience(data: ExperienceFormData) {
 }
 
 export async function updateExperience(id: number, data: ExperienceFormData) {
+  const session = await getSession();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
   const validation = validateExperienceData(data);
 
   if (!validation.success) {
@@ -207,6 +219,7 @@ export async function updateExperience(id: number, data: ExperienceFormData) {
       }
     });
 
+    revalidatePath("/");
     revalidatePath("/admin/experience");
     revalidatePath(`/admin/experience/${id}/edit`);
 
@@ -224,6 +237,11 @@ export async function updateExperience(id: number, data: ExperienceFormData) {
 }
 
 export async function deleteExperience(id: number) {
+  const session = await getSession();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
   if (!Number.isInteger(id) || id <= 0) {
     return {
       success: false as const,
@@ -254,6 +272,7 @@ export async function deleteExperience(id: number) {
       },
     });
 
+    revalidatePath("/");
     revalidatePath("/admin/experience");
 
     return {
@@ -275,6 +294,11 @@ interface SortExpProp {
 }
 
 export async function sortExperience(sortedData: SortExpProp[]) {
+  const session = await getSession();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
   try {
     await prisma.$transaction(
       sortedData.map((data) =>

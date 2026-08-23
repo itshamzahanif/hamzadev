@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import ExperienceTable from "@/components/admin/experience/ExperienceTable";
 
-export default async function ExperiencePage() {
+const ExperiencePage = async () => {
   const experiences = await prisma.experience.findMany({
     orderBy: {
       sortOrder: "asc",
@@ -26,4 +26,6 @@ export default async function ExperiencePage() {
   });
 
   return <ExperienceTable experiences={experiences} />;
-}
+};
+
+export default ExperiencePage;

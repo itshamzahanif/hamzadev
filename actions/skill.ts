@@ -6,6 +6,16 @@ import { Skill } from "@/types/types";
 import { revalidatePath } from "next/cache";
 import { SkillDialogServerSchema } from "@/schemas/schemas";
 
+export async function getHomepageSkills() {
+  try {
+    const skills = await prisma.skill.findMany();
+    return { success: true, skills };
+  } catch (err) {
+    console.error("Error fetching skills", err);
+    return { success: false, error: "Error fetching skills" };
+  }
+}
+
 export async function getSkills() {
   try {
     const session = await getSession();

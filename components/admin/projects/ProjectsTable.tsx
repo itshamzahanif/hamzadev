@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { DragDropProvider, DragEndEvent } from "@dnd-kit/react";
 import { isSortable, useSortable } from "@dnd-kit/react/sortable";
-import Link from "next/link";
+import { deleteProjects, sortProjects } from "@/actions/projects";
+import { Prisma } from "@/generated/prisma/client";
 import {
   GripVertical,
   MoreHorizontal,
@@ -13,7 +14,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useProgress } from "@bprogress/next";
-import { deleteExperience, sortExperience } from "@/actions/experience";
 import {
   Table,
   TableBody,
@@ -22,29 +22,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Link from "next/link";
 
-type Experience = {
-  id: number;
-  jobTitle: string;
-  employer: string;
-  location: string;
-  startDate: number;
-  endDate: number | null;
-  isContinued: boolean;
-  stack: {
-    skill: {
-      id: number;
-      name: string;
-    };
-  }[];
-};
+type Project = Prisma.ProjectGetPayload<{
+  include: {
+    technologies: true;
+    features: true;
+    highlights: true;
+  };
+}>;
 
 type Props = {
-  experiences: Experience[];
+  projects: Project[];
 };
 
-const ExperienceTable = ({ experiences }: Props) => {
-  const [items, setItems] = useState(experiences);
+const ProjectsTable = ({ projects }: Props) => {
+  const [items, setItems] = useState(projects);
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState("");
@@ -72,15 +65,13 @@ const ExperienceTable = ({ experiences }: Props) => {
     };
   }, [openMenu]);
 
-  async function handleDelete(experience: Experience) {
-    const confirmed = window.confirm(
-      `Delete "${experience.jobTitle}" at ${experience.employer}?\n\nThis will also delete its responsibilities and selected stack.`,
-    );
+  async function handleDelete(project: Project) {
+    const confirmed = window.confirm(`Delete "${project.title}"`);
     if (!confirmed) return;
     setDeleteError("");
-    setDeletingId(experience.id);
+    setDeletingId(project.id);
     try {
-      const result = await deleteExperience(experience.id);
+      const result = await deleteProjects(project.id);
 
       if (!result.success) {
         setDeleteError(result.error);
@@ -88,14 +79,14 @@ const ExperienceTable = ({ experiences }: Props) => {
 
       if (result.success) {
         setItems((currentItems) =>
-          currentItems.filter((item) => item.id !== experience.id),
+          currentItems.filter((item) => item.id !== project.id),
         );
 
         router.refresh();
       }
     } catch (error) {
       console.error(error);
-      setDeleteError("Failed to delete experience.");
+      setDeleteError("Failed to delete project.");
     } finally {
       setDeletingId(null);
       setOpenMenu(null);
@@ -134,11 +125,11 @@ const ExperienceTable = ({ experiences }: Props) => {
     }));
 
     try {
-      const sortResult = await sortExperience(sortedData);
+      const sortResult = await sortProjects(sortedData);
 
-      console.log("ExperienceTable:sortResult", sortResult);
+      console.log("ProjectsTable:sortResult", sortResult);
     } catch (err) {
-      console.error("ExperienceTable:sortErr", err);
+      console.error("ProjectsTable:sortErr", err);
     }
   }
 
@@ -147,22 +138,20 @@ const ExperienceTable = ({ experiences }: Props) => {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-white">Experience</h1>
+          <h1 className="text-xl font-semibold text-white">Projects</h1>
 
-          <p className="mt-1 text-sm text-slate-400">
-            Manage your professional experience and career history.
-          </p>
+          <p className="mt-1 text-sm text-slate-400">Manage your projects.</p>
         </div>
 
         <button
           className="relative cursor-pointer inline-flex items-center gap-2 overflow-hidden rounded-xl bg-linear-to-r from-brand-500 to-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-glow transition-transform hover:scale-[1.03] active:scale-95 disabled:cursor-not-allowed disabled:opacity-80"
           onClick={() => {
-            router.push("/admin/experience/new");
+            router.push("/admin/projects/new");
             start();
           }}
         >
           <Plus className="h-4 w-4" />
-          Add Experience
+          Add Project
         </button>
       </div>
 
@@ -182,19 +171,7 @@ const ExperienceTable = ({ experiences }: Props) => {
                 <TableHead className="w-12 px-4 py-3" />
 
                 <TableHead className="text-center font-semibold text-slate-400">
-                  Position
-                </TableHead>
-
-                <TableHead className="text-center font-semibold text-slate-400">
-                  Employer
-                </TableHead>
-
-                <TableHead className="text-center font-semibold text-slate-400">
-                  Location
-                </TableHead>
-
-                <TableHead className="text-center font-semibold text-slate-400">
-                  Period
+                  Title
                 </TableHead>
 
                 <TableHead className="text-center font-semibold text-slate-400">
@@ -210,24 +187,24 @@ const ExperienceTable = ({ experiences }: Props) => {
               <TableBody>
                 {items.length === 0 ? (
                   <TableRow className="border-b border-slate-700 even:bg-slate-800/30 hover:bg-slate-800 has-aria-expanded:bg-slate-800">
-                    <TableCell colSpan={7} className="px-6 py-16 text-center">
+                    <TableCell colSpan={6} className="px-6 py-16 text-center">
                       <p className="text-sm text-slate-400">
-                        No experience entries yet.
+                        No project entries yet.
                       </p>
 
                       <Link
-                        href="/admin/experience/new"
+                        href="/admin/projects/new"
                         className="mt-3 inline-block text-sm text-white hover:underline"
                       >
-                        Add your first experience
+                        Add your first project
                       </Link>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  items.map((experience, i) => (
+                  items.map((project, i) => (
                     <SortableTableRow
-                      key={experience.id}
-                      experience={experience}
+                      key={project.id}
+                      project={project}
                       index={i}
                       openMenu={openMenu}
                       deletingId={deletingId}
@@ -245,25 +222,25 @@ const ExperienceTable = ({ experiences }: Props) => {
   );
 };
 
-export default ExperienceTable;
+export default ProjectsTable;
 
 function SortableTableRow({
-  experience,
+  project,
   index,
   openMenu,
   deletingId,
   setOpenMenu,
   handleDelete,
 }: {
-  experience: Experience;
+  project: Project;
   index: number;
   openMenu: number | null;
   deletingId: number | null;
   setOpenMenu: (val: number | null) => void;
-  handleDelete: (experience: Experience) => void;
+  handleDelete: (project: Project) => void;
 }) {
   const { ref, handleRef } = useSortable({
-    id: experience.id,
+    id: project.id,
     index,
   });
   const actionRef = useRef<HTMLTableCellElement>(null);
@@ -271,7 +248,7 @@ function SortableTableRow({
   return (
     <TableRow
       ref={ref}
-      key={experience.id}
+      key={project.id}
       className="border-b border-slate-700 even:bg-slate-800/30 hover:bg-slate-800 has-aria-expanded:bg-slate-800"
     >
       {/* Future drag handle */}
@@ -287,45 +264,25 @@ function SortableTableRow({
         </button>
       </TableCell>
 
-      {/* Position */}
       <TableCell className="text-center whitespace-break-spaces py-4">
-        <span className="font-medium text-slate-200">
-          {experience.jobTitle}
-        </span>
-      </TableCell>
-
-      {/* Employer */}
-      <TableCell className="py-4 whitespace-break-spaces text-center text-sm text-slate-300">
-        {experience.employer}
-      </TableCell>
-
-      {/* Location */}
-      <TableCell className="py-4 text-center text-sm text-slate-400">
-        {experience.location}
-      </TableCell>
-
-      {/* Period */}
-      <TableCell className="whitespace-nowrap py-4 text-center text-sm text-slate-400">
-        {experience.startDate}
-        {" – "}
-        {experience.isContinued ? "Present" : (experience.endDate ?? "—")}
+        <span className="font-medium text-slate-200">{project.title}</span>
       </TableCell>
 
       {/* Stack */}
       <TableCell className="py-4 whitespace-break-spaces">
-        <div className="flex justify-center max-w-70 text-center flex-wrap gap-1.5">
-          {experience.stack.slice(0, 4).map(({ skill }) => (
+        <div className="flex justify-center max-full text-center flex-wrap gap-1.5">
+          {project.technologies.slice(0, 4).map((tech) => (
             <span
-              key={skill.id}
+              key={tech.id}
               className="rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-300"
             >
-              {skill.name}
+              {tech.name}
             </span>
           ))}
 
-          {experience.stack.length > 4 && (
+          {project.technologies.length > 4 && (
             <span className="rounded-md px-2 py-1 text-xs text-slate-500">
-              +{experience.stack.length - 4}
+              +{project.technologies.length - 4}
             </span>
           )}
         </div>
@@ -335,19 +292,19 @@ function SortableTableRow({
       <TableCell ref={actionRef} className="relative py-4">
         <button
           type="button"
-          disabled={deletingId === experience.id}
+          disabled={deletingId === project.id}
           onClick={() =>
-            setOpenMenu(openMenu === experience.id ? null : experience.id)
+            setOpenMenu(openMenu === project.id ? null : project.id)
           }
           className="rounded-md cursor-pointer p-1.5 text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
         >
           <MoreHorizontal className="h-5 w-5" />
         </button>
 
-        {openMenu === experience.id && (
+        {openMenu === project.id && (
           <div className="absolute right-4 top-12 z-30 w-36 rounded-lg border border-slate-700 bg-slate-900 p-1 shadow-xl">
             <Link
-              href={`/admin/experience/${experience.id}/edit`}
+              href={`/admin/projects/${project.id}/edit`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
             >
               <Pencil className="h-4 w-4" />
@@ -356,8 +313,8 @@ function SortableTableRow({
 
             <button
               type="button"
-              disabled={deletingId === experience.id}
-              onClick={() => handleDelete(experience)}
+              disabled={deletingId === project.id}
+              onClick={() => handleDelete(project)}
               className="flex cursor-pointer w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-400 transition hover:bg-slate-800 disabled:opacity-50"
             >
               <Trash2 className="h-4 w-4" />

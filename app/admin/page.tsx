@@ -29,7 +29,7 @@ const quickActions: Actions[] = [
   },
 ];
 
-export default async function DashboardPage() {
+const DashboardPage = async () => {
   const session = await getSession();
   const data = await dashboardData({
     startDate: undefined,
@@ -160,4 +160,6 @@ export default async function DashboardPage() {
       </motion.div> */}
     </div>
   );
-}
+};
+
+export default DashboardPage;

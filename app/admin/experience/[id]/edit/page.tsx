@@ -9,7 +9,7 @@ type Props = {
   }>;
 };
 
-export default async function EditExperiencePage({ params }: Props) {
+const EditExperiencePage = async ({ params }: Props) => {
   const { id: idParam } = await params;
 
   const id = Number(idParam);
@@ -84,4 +84,6 @@ export default async function EditExperiencePage({ params }: Props) {
       }}
     />
   );
-}
+};
+
+export default EditExperiencePage;
