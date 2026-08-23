@@ -6,7 +6,7 @@ type AnalyticsPayload = {
   referrer?: string;
   title?: string;
   projectId?: string;
-  isAutomated: boolean;
+  isAutomated?: boolean;
   metadata?: Record<string, unknown>;
 };
 
