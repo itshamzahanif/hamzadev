@@ -289,6 +289,8 @@ export async function sortExperience(sortedData: SortExpProp[]) {
       ),
     );
 
+    revalidatePath("/");
+
     return {
       success: true,
       message: "Experience sorted successfully",
