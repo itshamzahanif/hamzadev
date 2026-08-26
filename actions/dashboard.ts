@@ -1,5 +1,6 @@
 "use server";
 
+import { getSession } from "@/lib/authSession";
 import { prisma } from "@/lib/prisma";
 import { AnalyticsData, Stat } from "@/types/types";
 
@@ -11,6 +12,10 @@ export async function dashboardData({
   endDate?: Date;
 }) {
   try {
+    const session = await getSession();
+    if (!session?.user) {
+      return { success: false, error: "Unauthorised" };
+    }
     const messages = await prisma.contactMessage.findMany();
     const skills = await prisma.skill.findMany();
     const projects = await prisma.project.findMany();
@@ -68,6 +73,10 @@ export async function getPageViews({
   endDate?: Date;
 }) {
   try {
+    const session = await getSession();
+    if (!session?.user) {
+      return { success: false, error: "Unauthorised" };
+    }
     const now = new Date();
 
     const days = Number(startDate) || 90;
@@ -121,6 +130,10 @@ export async function getPageViews({
 
 export async function analytics() {
   try {
+    const session = await getSession();
+    if (!session?.user) {
+      return { success: false, error: "Unauthorised" };
+    }
     const referrers = await prisma.analyticsEvent.groupBy({
       by: ["referrer"],
       where: {
@@ -327,6 +340,10 @@ export async function analytics() {
 }
 export async function getMessages() {
   try {
+    const session = await getSession();
+    if (!session?.user) {
+      return { success: false, error: "Unauthorised" };
+    }
     const messages = await prisma.contactMessage.findMany({
       orderBy: {
         createdAt: "desc",

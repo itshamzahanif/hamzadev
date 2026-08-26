@@ -255,3 +255,65 @@ export const experienceFormSchema = z
       });
     }
   });
+
+export const projectSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(1, "Slug is required")
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Slug can only contain lowercase letters, numbers, and hyphens",
+    ),
+
+  title: z.string().trim().min(1, "Title is required"),
+
+  tagline: z.string().trim().min(1, "Tagline is required"),
+
+  description: z.string().trim().min(1, "Description is required"),
+
+  codePreviewName: z.string().trim().optional().or(z.literal("")),
+
+  previewCode: z.string().optional().or(z.literal("")),
+
+  codeLanguage: z.string().trim().optional().or(z.literal("")),
+
+  liveUrl: z
+    .string()
+    .trim()
+    .url("Enter a valid URL")
+    .optional()
+    .or(z.literal("")),
+
+  repoUrl: z
+    .string()
+    .trim()
+    .url("Enter a valid URL")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
+
+  clientProject: z.boolean(),
+
+  // accent: z.string().trim().optional().or(z.literal("")),
+
+  // icon: z.string().trim().optional().or(z.literal("")),
+
+  technologies: z
+    .array(z.string().trim().min(1, "Technology is required"))
+    .min(1, "Add at least one technology"),
+
+  features: z.array(
+    z.object({
+      content: z.string().trim().min(1, "Feature is required"),
+    }),
+  ),
+
+  highlights: z.array(
+    z.object({
+      label: z.string().trim().min(1, "Highlight label is required"),
+
+      value: z.string().trim().min(1, "Highlight value is required"),
+    }),
+  ),
+});

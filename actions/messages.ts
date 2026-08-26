@@ -1,12 +1,16 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/authSession";
 import { revalidatePath } from "next/cache";
 
 export async function getPaginatedMessages(page = 1, pageSize = 10) {
   try {
+    const session = await getSession();
+    if (!session?.user) {
+      return { success: false, error: "Unauthorised" };
+    }
     const skip = (page - 1) * pageSize;
-
     const [messages, total] = await Promise.all([
       prisma.contactMessage.findMany({
         skip,
@@ -43,6 +47,10 @@ export async function getPaginatedMessages(page = 1, pageSize = 10) {
 
 export async function getUnreadMessages() {
   try {
+    const session = await getSession();
+    if (!session?.user) {
+      return { success: false, error: "Unauthorised" };
+    }
     const unreadMessagesCount = await prisma.contactMessage.count({
       where: {
         read: false,
@@ -58,6 +66,10 @@ export async function getUnreadMessages() {
 
 export async function getMessage(id: string) {
   try {
+    const session = await getSession();
+    if (!session?.user) {
+      return { success: false, error: "Unauthorised" };
+    }
     const messageId = Number(id);
 
     if (!Number.isInteger(messageId)) {
@@ -96,6 +108,10 @@ export async function getMessage(id: string) {
 
 export async function updateMessageStatus(id: string) {
   try {
+    const session = await getSession();
+    if (!session?.user) {
+      return { success: false, error: "Unauthorised" };
+    }
     const messageId = Number(id);
 
     if (!Number.isInteger(messageId)) {
