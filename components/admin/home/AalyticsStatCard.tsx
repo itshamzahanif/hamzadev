@@ -82,21 +82,19 @@ const AnalyticsStatCard = ({ title, analytics, index }: StatCardProps) => {
           const percentage = Math.round((item.count / maxValue) * 100);
 
           return (
-            <>
+            <div
+              key={String(label) + item.count + index}
+              className="group relative rounded-md py-1.5 px-2 my-1 transition-colors hover:bg-slate-800/40"
+            >
               <div
-                key={String(label) + item.count + index}
-                className="group relative rounded-md py-1.5 px-2 my-1 transition-colors hover:bg-slate-800/40"
-              >
-                <div
-                  className="absolute inset-y-0 left-0 rounded-md bg-indigo-500/10 transition-all duration-300 group-hover:bg-indigo-500/20"
-                  style={{ width: `${percentage}%` }}
-                />
-                <div className="relative flex justify-between">
-                  <span className="w-[80%] wrap-break-word">{label}</span>
-                  <span>{item.count}</span>
-                </div>
+                className="absolute inset-y-0 left-0 rounded-md bg-indigo-500/10 transition-all duration-300 group-hover:bg-indigo-500/20"
+                style={{ width: `${percentage}%` }}
+              />
+              <div className="relative flex justify-between">
+                <span className="w-[80%] wrap-break-word">{label}</span>
+                <span>{item.count}</span>
               </div>
-            </>
+            </div>
           );
         })}
       </div>

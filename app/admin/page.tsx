@@ -45,9 +45,10 @@ const DashboardPage = async () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {data.stats.map((stat, index) => {
-          return <StatCard key={index} stat={stat} index={index} />;
-        })}
+        {data.stats &&
+          data?.stats.map((stat, index) => {
+            return <StatCard key={index} stat={stat} index={index} />;
+          })}
       </div>
 
       <div className="">
@@ -70,7 +71,7 @@ const DashboardPage = async () => {
       {/* Main content */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         {/* Recent Messages */}
-        <MessagesCard messages={messages.slice(0, 3)} />
+        <MessagesCard messages={messages?.messages?.slice(0, 3) || []} />
 
         {/* Quick Actions */}
         <QuickActions quickActions={quickActions} />

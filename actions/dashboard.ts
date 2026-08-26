@@ -350,7 +350,7 @@ export async function getMessages() {
       },
     });
 
-    return messages;
+    return { success: true, messages };
   } catch (err) {
     console.error("Dashboard data error:", err);
     throw new Error("Failed to load dashboard data");
