@@ -105,10 +105,18 @@ export default function AdminSidebar({
 
           {sidebarOverviewMenu.map((menu, i) => {
             const Icon = sidebarIcons[menu.icon];
+            const isActive =
+              menu.href === "/admin"
+                ? pathname === "/admin"
+                : pathname.startsWith(menu.href);
             return (
               <span
                 key={i}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition ${pathname === menu.href ? "bg-brand-500/10 text-brand-400" : "text-slate-400 hover:text-white hover:bg-slate-900"}`}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition ${
+                  isActive
+                    ? "bg-brand-500/10 text-brand-400"
+                    : "text-slate-400 hover:text-white hover:bg-slate-900"
+                }`}
                 onClick={() => {
                   navigate(menu.href);
                   onMenuClick();
@@ -121,7 +129,7 @@ export default function AdminSidebar({
           })}
 
           <span
-            className={`flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition ${pathname === "/admin/messages" ? "bg-brand-500/10 text-brand-400" : "text-slate-400 hover:text-white hover:bg-slate-900"}`}
+            className={`flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition ${pathname.startsWith("/admin/messages") ? "bg-brand-500/10 text-brand-400" : "text-slate-400 hover:text-white hover:bg-slate-900"}`}
             onClick={() => {
               navigate("/admin/messages");
               onMenuClick();
@@ -148,7 +156,7 @@ export default function AdminSidebar({
             return (
               <span
                 key={i}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition ${pathname === menu.href ? "bg-brand-500/10 text-brand-400" : "text-slate-400 hover:text-white hover:bg-slate-900"}`}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition ${pathname.startsWith(menu.href) ? "bg-brand-500/10 text-brand-400" : "text-slate-400 hover:text-white hover:bg-slate-900"}`}
                 onClick={() => {
                   navigate(menu.href);
                   onMenuClick();
