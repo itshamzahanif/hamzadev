@@ -20,8 +20,8 @@ const personSchema = {
   url: "https://hamzahanif.dev",
   jobTitle: "Full-Stack Developer",
   sameAs: [
-    "https://github.com/mhamza7265",
-    "https://linkedin.com/in/mhamza7265",
+    "https://github.com/itshamzahanif",
+    "https://linkedin.com/in/itshamzahanif",
   ],
 };
 
